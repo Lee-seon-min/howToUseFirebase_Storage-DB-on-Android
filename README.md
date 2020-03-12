@@ -7,7 +7,7 @@ storage=FirebaseStorage.getInstance();
 ```  
   
 그 후, 디바이스의 갤러리에서 사진을 pick할 수 있는곳으로 이동한다.  
-*코드를 지켜주기 바람.  
+★ <b>코드를 지켜주기 바람.</b>  
 ```
 Intent intent=new Intent();
 intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
@@ -16,7 +16,7 @@ startActivityForResult(intent,101);
 ```  
   
 가져온 사진의 경로를 "content://" 타입이 아닌 다른 경로타입으로 바꾸어 주고 업로드 한다.  
-*매우 중요한 부분이다. 기존 경로는 사용할 수 가 없으므로 꼭 변환필요  
+★ <b>매우 중요한 부분이다. 기존 경로는 사용할 수 가 없으므로 꼭 변환필요 </b> 
 ```
 @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
