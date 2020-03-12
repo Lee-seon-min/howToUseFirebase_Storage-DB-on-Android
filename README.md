@@ -84,7 +84,81 @@ startActivityForResult(intent,101);
                 object.uid=auth.getCurrentUser().getUid(); //uid
                 object.userId=auth.getCurrentUser().getEmail(); //email
 
-                database.getReference().child("images").setValue(object); //데이터베이스 참조 후, images 하위트리로 가서 값을 저장
+                database.getReference().child("images").child(object.title).setValue(object); 
+                //데이터베이스 참조 후, images 하위트리로 가서 값을 저장
             }
         });
+```  
+  
+### Read Database
+저장되있는 데이터를 가져올 수 잇다. (JSON 형태로 전달된다.)  
+```
+public class BoardActivity extends AppCompatActivity {
+    private RecyclerView recyclerView;
+    private List<ImageObject> list=new ArrayList<>();
+    private FirebaseDatabase database;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_board);
+        database=FirebaseDatabase.getInstance();
+
+        recyclerView=findViewById(R.id.recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        final BoardRecyclerViewAdapter boardRecyclerViewAdapter=new BoardRecyclerViewAdapter();
+        recyclerView.setAdapter(boardRecyclerViewAdapter);
+
+        database.getReference().child("images").addValueEventListener(new ValueEventListener() { //현재 위치는 image의 하위트리
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
+                for (DataSnapshot data: dataSnapshot.getChildren()) { //2개가 저장되있으면 2번 반복
+                    ImageObject object = data.getValue(ImageObject.class); //JSON -> Object
+                    list.add(object);
+               }
+                boardRecyclerViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //DoSomething if cancelled
+            }
+        });
+
+    }
+    //리사이클러뷰는 설명을 생략한다.
+    class BoardRecyclerViewAdapter extends RecyclerView.Adapter<BoardRecyclerViewAdapter.ItemHolder>{
+        @NonNull
+        @Override
+        public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_board,parent,false);
+            return new ItemHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
+            holder.textView1.setText(list.get(position).title);
+            holder.textView2.setText(list.get(position).contents);
+
+            //해당 아이템의 뷰의 이미지뷰안에 해당 주소의 이미지를 로드한다.
+            Glide.with(holder.itemView.getContext()).load(list.get(position).imageUri).into(holder.imageView);
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        public class ItemHolder extends RecyclerView.ViewHolder {
+            ImageView imageView;
+            TextView textView1,textView2;
+            public ItemHolder(View view) {
+                super(view);
+                imageView=view.findViewById(R.id.myimage);
+                textView1=view.findViewById(R.id.info1);
+                textView2=view.findViewById(R.id.info2);
+            }
+        }
+    }
+}
 ```
