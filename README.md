@@ -1,6 +1,6 @@
 # howToUseFirebase_Storage&DB-on-Android
 ### ※파일 업로드  
-<a href=https://firebase.google.com/docs/storage/android/upload-files?hl=ko>참조 문서</a>  
+<a href=https://firebase.google.com/docs/storage/android/upload-files>참조 문서</a>  
 우선 버킷주소를 참조할 객체를 선언한다.  
 ```
 FirebaseStorage storage;
