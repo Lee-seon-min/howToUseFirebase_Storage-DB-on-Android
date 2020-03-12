@@ -1,5 +1,5 @@
 # howToUseFirebase_Storage&DB-on-Android
-### 파일 업로드  
+### ※파일 업로드  
 우선 버킷주소를 참조할 객체를 선언한다.  
 ```
 FirebaseStorage storage;
@@ -56,7 +56,7 @@ startActivityForResult(intent,101);
     }
 ```  
   
-### Do you want to use Database?(Module:app gradle 12.0.1)  
+### ※Do you want to use Database?(Module:app gradle 12.0.1)  
 만일 이미지를 업로드와 동시에 이미지의 정보를 데이터베이스에 저장을 원할시, 위 코드에서
 ```
         Uri file=Uri.fromFile(new File(path)); //해당 파일의 경로
