@@ -56,7 +56,7 @@ startActivityForResult(intent,101);
     }
 ```  
   
-### Do you want to use Database?  
+### Do you want to use Database?(Module:app gradle 12.0.1)  
 만일 이미지를 업로드와 동시에 이미지의 정보를 데이터베이스에 저장을 원할시, 위 코드에서
 ```
         Uri file=Uri.fromFile(new File(path)); //해당 파일의 경로
