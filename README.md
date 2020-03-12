@@ -92,8 +92,8 @@ startActivityForResult(intent,101);
 ```  
   
 ### ※Read Database
-저장되있는 데이터를 가져올 수 잇다. (JSON 형태로 전달된다.)  
 <a href=https://firebase.google.com/docs/database/android/read-and-write>참조 문서</a>  
+저장되있는 데이터를 가져올 수 잇다. (JSON 형태로 전달된다.)  
 ```
 public class BoardActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
