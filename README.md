@@ -1,4 +1,4 @@
-# howToUseFirebase_Storage-on-Android
+# howToUseFirebase_Storage&DB-on-Android
 ### 파일 업로드  
 우선 버킷주소를 참조할 객체를 선언한다.  
 ```
