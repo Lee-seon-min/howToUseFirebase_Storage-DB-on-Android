@@ -23,7 +23,7 @@ startActivityForResult(intent,101);
        super.onActivityResult(requestCode, resultCode, data);
        if(requestCode==101 && resultCode==RESULT_OK){
            String path=getPath(data.getData());
-           StorageReference reference=storage.getReferenceFromUrl("gs://myproject-bc9a3.appspot.com"); //스토리지 버킷주소 참조
+           StorageReference reference=storage.getReferenceFromUrl("bucket address"); //스토리지 버킷주소 참조
 
            Uri file=Uri.fromFile(new File(path)); //해당 파일의 경로
            StorageReference putref=reference.child("images/"+file.getLastPathSegment()); //기존 reference의 참조주소에서 해당 하위트리 참조
