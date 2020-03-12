@@ -90,7 +90,7 @@ startActivityForResult(intent,101);
         });
 ```  
   
-### Read Database
+### ※Read Database
 저장되있는 데이터를 가져올 수 잇다. (JSON 형태로 전달된다.)  
 ```
 public class BoardActivity extends AppCompatActivity {
