@@ -1,5 +1,6 @@
 # howToUseFirebase_Storage&DB-on-Android
 ### ※파일 업로드  
+<a href=https://firebase.google.com/docs/storage/android/upload-files?hl=ko>참조 문서</a>
 우선 버킷주소를 참조할 객체를 선언한다.  
 ```
 FirebaseStorage storage;
@@ -92,6 +93,7 @@ startActivityForResult(intent,101);
   
 ### ※Read Database
 저장되있는 데이터를 가져올 수 잇다. (JSON 형태로 전달된다.)  
+<a href=https://firebase.google.com/docs/database/android/read-and-write>참조 문서</a>
 ```
 public class BoardActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
