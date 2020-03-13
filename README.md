@@ -249,8 +249,8 @@ public class BoardActivity extends AppCompatActivity {
                 }
             });
         }
-'''  
-  
+        
+        
 ### Delete  
 삭제 버튼을 하나 추가하고, 그 이벤트로 해당 함수를 실행하게 한다.(Storage&DB 모두 삭제해야함)  
 '''
