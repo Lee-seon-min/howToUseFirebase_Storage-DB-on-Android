@@ -275,7 +275,7 @@ public void deleteContents(int pos){
                 }
             };
 
-            //ImageObject에 imageName 필드를 추가하고, HomeActivity클래스에 file.getLastPathSegment(); 를 저장
+            //ImageObject에 imageName 필드를 추가하고, HomeActivity클래스에서 file.getLastPathSegment(); 를 저장
             storage.getReference().child("images").child(list.get(pos).imageName).delete();
 
             database.getReference().child("images").child(keylist.get(pos)).removeValue()
