@@ -99,11 +99,14 @@ public class BoardActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<ImageObject> list=new ArrayList<>();
     private FirebaseDatabase database;
+    private List<String> keylist=new ArrayList<>();
+    private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board);
         database=FirebaseDatabase.getInstance();
+        auth=FirebaseAuth.getInstance();
 
         recyclerView=findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -115,8 +118,9 @@ public class BoardActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
                 for (DataSnapshot data: dataSnapshot.getChildren()) { //2개가 저장되있으면 2번 반복
-                    ImageObject object = data.getValue(ImageObject.class); //JSON -> Object
+                    ImageObject object = data.getValue(ImageObject.class); //JSON -> Object (자식)
                     list.add(object);
+                    keylist.add(object.title); //해당 이미지의 제목이 곧 그 이미지가 들어갈 폴더이다.
                }
                 boardRecyclerViewAdapter.notifyDataSetChanged();
             }
@@ -163,4 +167,88 @@ public class BoardActivity extends AppCompatActivity {
         }
     }
 }
-```
+```  
+  
+### Transaction  
+트랜젝션이란, 하나의 일의 단위로서, 여러 사용자가 동시에 같은 데이터에 접근해선 안되는 경우( 예)좋아요 갱신 )해당 트랜젝션을  
+독립적으로 수행하게 한다.  
+<a href=https://firebase.google.com/docs/database/android/read-and-write>참조 문서</a>  
+'''
+@Override
+        public void onBindViewHolder(@NonNull ItemHolder holder, final int position) {
+            final ItemHolder itemHolder=holder;
+
+            if(list.get(position).stars.containsKey(auth.getCurrentUser().getUid())){ //좋아요가 눌렸니?
+                itemHolder.starImage.setImageResource(R.drawable.sharp_star_black_24); //꽉찬 별
+            }
+            else{
+                itemHolder.starImage.setImageResource(R.drawable.sharp_star_border_black_24); //빈 별
+            }
+
+            holder.textView1.setText(list.get(position).title);
+            holder.textView2.setText(list.get(position).contents);
+
+            //해당 아이템의 뷰의 이미지뷰안에 해당 주소의 이미지를 로드한다.
+            Glide.with(holder.itemView.getContext()).load(list.get(position).imageUri).into(holder.imageView);
+            holder.starImage.setOnClickListener(new View.OnClickListener() { //스타버튼 클릭 이벤트
+                @Override
+                public void onClick(View v) {
+
+                    //내가 좋아요를 누른 이미지의 데이터베이스참조로 접근
+                    onStarClicked(database.getReference().child("images").child(keylist.get(position)));
+                    if(list.get(position).stars.containsKey(auth.getCurrentUser().getUid())){ //좋아요를 눌렀니?
+                        itemHolder.starImage.setImageResource(R.drawable.sharp_star_black_24); //꽉찬 별
+                    }
+                    else{
+                        itemHolder.starImage.setImageResource(R.drawable.sharp_star_border_black_24); //빈 별
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        private void onStarClicked(DatabaseReference postRef) {
+            postRef.runTransaction(new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+                    //트랜젝션 실행
+
+                    ImageObject p = mutableData.getValue(ImageObject.class); //JSON -> Object
+                    if (p == null) { //없다면,
+                        return Transaction.success(mutableData);
+                    }
+
+                    if (p.stars.containsKey(auth.getCurrentUser().getUid())) { //이 유저가 이미 좋아요를 눌렀는가?
+                        // 해당 이미지의 좋아요 갯수 -1
+                        p.starCount = p.starCount - 1;
+
+                        //해당 유저는 좋아요를 눌렀었으므로 삭제
+                        p.stars.remove(auth.getCurrentUser().getUid());
+                    } else {
+
+                        // 해당 이미지의 좋아요 갯수 +1
+                        p.starCount = p.starCount + 1;
+
+                        //해당 유저의 id와 좋아요를 눌렀다는 증거의 true를 Map으로 저장
+                        p.stars.put(auth.getCurrentUser().getUid(), true);
+                    }
+
+                    // 바뀐 데이터 업데이트
+                    mutableData.setValue(p);
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(DatabaseError databaseError, boolean b,
+                                       DataSnapshot dataSnapshot) {
+                    // Do Something if Transaction completed
+                }
+            });
+        }
+'''  
+  
+  
