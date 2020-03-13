@@ -173,7 +173,7 @@ public class BoardActivity extends AppCompatActivity {
 트랜젝션이란, 하나의 일의 단위로서, 여러 사용자가 동시에 같은 데이터에 접근해선 안되는 경우( 예)좋아요 갱신 )해당 트랜젝션을 
 독립적으로 수행하게 한다.  
 <a href=https://firebase.google.com/docs/database/android/read-and-write>참조 문서</a>  
-'''
+```
 @Override
         public void onBindViewHolder(@NonNull ItemHolder holder, final int position) {
             final ItemHolder itemHolder=holder;
@@ -249,6 +249,5 @@ public class BoardActivity extends AppCompatActivity {
                 }
             });
         }
-'''  
-  
+'''
   
