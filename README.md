@@ -248,6 +248,33 @@ public class BoardActivity extends AppCompatActivity {
                     // Do Something if Transaction completed
                 }
             });
-        }'''
+        }
+'''  
+  
+### Delete  
+삭제 버튼을 하나 추가하고, 그 이벤트로 해당 함수를 실행하게 한다.(Storage&DB 모두 삭제해야함)  
+'''
+public void deleteContents(int pos){
+            OnSuccessListener onSuccessListener=new OnSuccessListener() {
+                @Override
+                public void onSuccess(Object o) {
+                    Toast.makeText(BoardActivity.this,"삭제 완료",Toast.LENGTH_SHORT).show();
+                }
+            };
+            OnFailureListener onFailureListener=new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(BoardActivity.this,"삭제 실패",Toast.LENGTH_SHORT).show();
+                }
+            };
+
+            storage.getReference().child("images").child(list.get(pos).imageName).delete();
+
+            database.getReference().child("images").child(keylist.get(pos)).removeValue()
+                    .addOnSuccessListener(onSuccessListener)
+                    .addOnFailureListener(onFailureListener);
+        }
+'''
+
 
   
