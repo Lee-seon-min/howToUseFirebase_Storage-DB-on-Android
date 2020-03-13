@@ -171,8 +171,15 @@ public class BoardActivity extends AppCompatActivity {
   
 ### ※Transaction  
 트랜젝션이란, 하나의 일의 단위로서, 여러 사용자가 동시에 같은 데이터에 접근해선 안되는 경우( 예)좋아요 갱신 )해당 트랜젝션을 
-독립적으로 수행하게 한다. 리사이클러뷰 어뎁터 클래에 다음을 추가하자.  
+독립적으로 수행하게 한다. 리사이클러뷰 어뎁터 클래스와 ImageObject에 다음을 추가하자.  
 <a href=https://firebase.google.com/docs/database/android/read-and-write>참조 문서</a>  
+<b>ImageObject Class</b>  
+```
+public int starCount = 0;
+public Map<String, Boolean> stars = new HashMap<>();
+```  
+  
+<b>BoardRecyclerViewAdapter Class</b>  
 ```
 @Override
         public void onBindViewHolder(@NonNull ItemHolder holder, final int position) {
@@ -268,6 +275,7 @@ public void deleteContents(int pos){
                 }
             };
 
+            //ImageObject에 imageName 필드를 추가하고, HomeActivity클래스에 file.getLastPathSegment(); 를 저장
             storage.getReference().child("images").child(list.get(pos).imageName).delete();
 
             database.getReference().child("images").child(keylist.get(pos)).removeValue()
