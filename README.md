@@ -30,19 +30,27 @@ startActivityForResult(intent,101);
            StorageReference putref=reference.child("images/"+file.getLastPathSegment()); //기존 reference의 참조주소에서 해당 하위트리 참조
            UploadTask task=putref.putFile(file); //해당 경로에 파일을 삽입
 
-           task.addOnFailureListener(new OnFailureListener() { //실패시 이벤트
-               @Override
-               public void onFailure(@NonNull Exception e) {
-                   //DoSomething if fail
-               }
-           }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() { //성공시 이벤트
-               @Override
-               public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                   //taskSnapshot.getMetadata() 는 파일의 메타데이터를 포함함(사이즈 등등)
-                   //DoSomething if success
-                   Toast.makeText(HomeActivity.this,"파일 업로드 성공",Toast.LENGTH_SHORT).show();
-               }
-           });
+           Task<Uri> urlTask = task.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                // Continue with the task to get the download URL
+                return putref.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(HomeActivity.this,"파일 업로드 성공",Toast.LENGTH_SHORT).show();
+
+                } else {
+                    // Handle failures
+                    // ...
+                }
+            }
+        });
        }
     }
     public String getPath(Uri uri){ //적절한 path로 바꿔주는 코드
@@ -57,7 +65,7 @@ startActivityForResult(intent,101);
     }
 ```  
   
-### ※Do you want to use Database?(Module:app gradle 12.0.1)  
+### ※Do you want to use Database?  
 만일 이미지를 업로드와 동시에 이미지의 정보를 데이터베이스에 저장을 원할시, 위 코드에서 아래를 추가하자
 ```
         Uri file=Uri.fromFile(new File(path)); //해당 파일의 경로
@@ -66,27 +74,35 @@ startActivityForResult(intent,101);
         final StorageReference putref=reference.child("images/"+file.getLastPathSegment());
         UploadTask task=putref.putFile(file); //해당 경로에 파일을 삽입
 
-        task.addOnFailureListener(new OnFailureListener() {
+         Task<Uri> urlTask = task.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                //DoSomething if fail
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                // Continue with the task to get the download URL
+                return putref.getDownloadUrl();
             }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                //taskSnapshot.getMetadata() 는 파일의 메타데이터를 포함함(사이즈 등등)
-                //DoSomething if success
-                Toast.makeText(HomeActivity.this,"파일 업로드 성공",Toast.LENGTH_SHORT).show();
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(HomeActivity.this,"파일 업로드 성공",Toast.LENGTH_SHORT).show();
 
-                ImageObject object=new ImageObject(); //하나의 파일 정보가 될것(직접 정의)
-                object.imageUri=taskSnapshot.getDownloadUrl().toString(); //파일경로
-                object.title=title.getText().toString(); //타이틀
-                object.contents=cont.getText().toString(); //콘텐츠
-                object.uid=auth.getCurrentUser().getUid(); //uid
-                object.userId=auth.getCurrentUser().getEmail(); //email
-
-                database.getReference().child("images").child(object.title).setValue(object); 
-                //데이터베이스 참조 후, images 하위트리로 가서 값을 저장
+                    ImageObject object=new ImageObject(); //하나의 파일 정보가 될것
+                    object.imageUri=task.getResult().toString(); //파일 이미지 경로
+                    object.title=title.getText().toString();
+                    object.contents=cont.getText().toString();
+                    object.uid=auth.getCurrentUser().getUid();
+                    object.userId=auth.getCurrentUser().getEmail();
+                    object.imageName=file.getLastPathSegment();
+                    
+                    //데이터베이스 참조 후, images 하위트리로 가서 값을 저장
+                    database.getReference().child("images").child(object.title).setValue(object); 
+                } else {
+                    // Handle failures
+                    // ...
+                }
             }
         });
 ```  
